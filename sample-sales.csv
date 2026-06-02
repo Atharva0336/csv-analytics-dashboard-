@@ -1,0 +1,21 @@
+Order ID,Order Date,Region,Category,Product,Sales,Profit,Quantity,Discount,Customer Email,Returned,Notes
+1001,2026-01-03,West,Technology,Laptop,1299.99,210.50,1,0,jordan@example.com,no,Priority buyer
+1002,2026-01-04,East,Furniture,Chair,249.50,42.30,2,0.1,avery@example.com,no,Office refresh
+1003,2026-01-05,South,Office Supplies,Paper,39.99,8.50,5,0.05,riley@example.com,yes,Delayed shipment
+1004,2026-01-05,North,Technology,Monitor,399.00,75.20,1,0,casey@example.com,no,Bundle request
+1005,2026-01-07,West,Furniture,Desk,699.25,120.00,1,0.15,morgan@example.com,no,Assembly required
+1006,2026-01-08,East,Technology,Keyboard,89.90,19.10,3,0,quinn@example.com,no,
+1007,2026-01-09,South,Office Supplies,Ink,62.40,11.70,4,0.05,taylor@example.com,yes,Repeat return
+1008,2026-01-10,North,Furniture,Shelf,310.00,55.80,2,0.2,drew@example.com,no,Backordered
+1009,2026-01-11,West,Technology,Mouse,44.95,9.20,6,0,jules@example.com,no,
+1010,2026-01-13,East,Office Supplies,Notebook,24.75,5.10,8,0.1,skyler@example.com,no,School order
+1011,2026-01-14,South,Furniture,Chair,279.00,38.40,2,0.05,blair@example.com,no,
+1012,2026-01-15,North,Technology,Tablet,559.00,101.40,1,0.1,remy@example.com,yes,Screen issue
+1013,2026-01-16,West,Office Supplies,Stapler,18.25,4.00,10,0,devon@example.com,no,
+1014,2026-01-18,East,Furniture,Desk,749.00,132.60,1,0.12,harper@example.com,no,Executive desk
+1015,2026-01-19,South,Technology,Laptop,1499.00,260.10,1,0.08,logan@example.com,no,Expedited
+1016,2026-01-20,North,Office Supplies,Paper,42.30,7.90,7,0,peyton@example.com,no,
+1017,2026-01-22,West,Furniture,Sofa,980.00,144.00,1,0.18,sage@example.com,yes,Fabric damage
+1018,2026-01-23,East,Technology,Monitor,429.95,88.20,2,0.05,river@example.com,no,
+1019,2026-01-25,South,Office Supplies,Ink,58.00,10.25,5,0.1,finley@example.com,no,
+1020,2026-01-27,North,Technology,Camera,799.00,150.30,1,0.05,kai@example.com,no,Gift packaging

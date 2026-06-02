@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CSV Insight Dashboard</title>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="topbar">
+        <div>
+          <p class="eyebrow">CSV Analysis Studio</p>
+          <h1>Upload any CSV and get an automatic dashboard.</h1>
+        </div>
+        <div class="actions">
+          <button id="sampleButton" class="secondary-button" type="button">Load Sample</button>
+          <label class="upload-button">
+            <input id="csvInput" type="file" accept=".csv,text/csv" />
+            <span>Choose CSV</span>
+          </label>
+        </div>
+      </section>
+
+      <section id="dropZone" class="drop-zone">
+        <div>
+          <strong>Drop a CSV file here</strong>
+          <span>The app infers column types, calculates summaries, and selects charts from a 40-chart library.</span>
+        </div>
+      </section>
+
+      <section id="statusPanel" class="status-panel">
+        <div class="empty-state">
+          <h2>Waiting for data</h2>
+          <p>Use a CSV with headers in the first row. Dates, numbers, identifiers, categorical text, free text, booleans, and URLs are detected automatically.</p>
+        </div>
+      </section>
+
+      <section id="summaryGrid" class="summary-grid" aria-live="polite"></section>
+      <section id="schemaGrid" class="schema-grid"></section>
+      <section id="dashboardGrid" class="dashboard-grid"></section>
+    </main>
+
+    <template id="cardTemplate">
+      <article class="chart-card">
+        <header>
+          <div>
+            <p class="chart-type"></p>
+            <h3></h3>
+          </div>
+          <span class="score"></span>
+        </header>
+        <div class="chart-wrap">
+          <canvas></canvas>
+          <div class="table-wrap"></div>
+        </div>
+        <p class="formula"></p>
+      </article>
+    </template>
+
+    <script src="app.js?v=3"></script>
+  </body>
+</html>
