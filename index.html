@@ -3,44 +3,109 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CSV Insight Dashboard</title>
+    <title>CSV Insight Dashboard | Atharva Raut</title>
+    <meta name="description"
+    content="Upload CSV files and generate automatic analytics dashboards with charts, summaries and data quality insights.">
+    
+    <meta name="keywords"
+    content="CSV Dashboard, Data Analytics, Dashboard, CSV Analysis, Atharva Raut">
+
+    <meta name="author" 
+    content="Atharva Raut">
     <link rel="preconnect" href="https://cdn.jsdelivr.net" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <main class="app-shell">
-      <section class="topbar">
-        <div>
-          <p class="eyebrow">CSV Analysis Studio</p>
-          <h1>Upload any CSV and get an automatic dashboard.</h1>
+    <div class="app-frame">
+      <aside class="sidebar" aria-label="Application navigation">
+        <div class="brand-block">
+          <div class="brand-mark" aria-hidden="true">AR</div>
+          <div>
+            <strong> AI-Powered CSV Analytics Dashboard</strong>
+            <span>by Atharva Raut</span>
+          </div>
         </div>
-        <div class="actions">
-          <button id="sampleButton" class="secondary-button" type="button">Load Sample</button>
-          <label class="upload-button">
-            <input id="csvInput" type="file" accept=".csv,text/csv" />
-            <span>Choose CSV</span>
+
+        <nav class="nav-list">
+          <a href="#upload">Upload</a>
+          <a href="#overview">Overview</a>
+          <a href="#schema">Schema</a>
+          <a href="#charts">Charts</a>
+        </nav>
+
+        <section id="branding" class="brand-panel">
+          <p class="side-label">Branding</p>
+          <label>
+            Display name
+            <input id="brandNameInput" value="Atharva Raut" />
           </label>
-        </div>
-      </section>
+          <label>
+            LinkedIn
+            <a href="https://www.linkedin.com/in/atharva-raut-2b8148261/">Click here to go to LinkedIn </a>
+          </label>
+          <label>
+            GitHub / Portfolio
+            <a href="github.com/Atharva0336">Click here to go to Github </a>
+          </label>
+          <div class="brand-links" id="brandLinks"></div>
+        </section>
+      </aside>
 
-      <section id="dropZone" class="drop-zone">
-        <div>
-          <strong>Drop a CSV file here</strong>
-          <span>The app infers column types, calculates summaries, and selects charts from a 40-chart library.</span>
-        </div>
-      </section>
+      <main class="app-shell">
+        <section id="upload" class="topbar">
+          <div>
+             <header class="header">
+              <img src="logo.png" width="150" alt="CSV Analytics Dashboard Logo" class="logo">
+            </header>
+            <p class="eyebrow">CSV Analysis Studio</p> 
+            <h1>Beautiful CSV dashboards, generated automatically.</h1>
+            <p class="hero-copy">Analyze headers, infer data types, calculate mathematically correct summaries, and get the most useful charts first.</p>
+          </div>
+          <div class="actions">
+            <button id="sampleButton" class="secondary-button" type="button">Load Sample</button>
+            <button id="exportButton" class="secondary-button" type="button" disabled>Download Report</button>
+            <label class="upload-button">
+              <input id="csvInput" type="file" accept=".csv,text/csv" />
+              <span>Choose CSV</span>
+            </label>
+          </div>
+        </section>
 
-      <section id="statusPanel" class="status-panel">
-        <div class="empty-state">
-          <h2>Waiting for data</h2>
-          <p>Use a CSV with headers in the first row. Dates, numbers, identifiers, categorical text, free text, booleans, and URLs are detected automatically.</p>
-        </div>
-      </section>
+        <section id="dropZone" class="drop-zone">
+          <div>
+            <strong>Drop a CSV file here</strong>
+            <span>The first row is treated as headers. Charts are ranked, filtered, and shown in a cleaner dashboard view.</span>
+          </div>
+        </section>
 
-      <section id="summaryGrid" class="summary-grid" aria-live="polite"></section>
-      <section id="schemaGrid" class="schema-grid"></section>
-      <section id="dashboardGrid" class="dashboard-grid"></section>
-    </main>
+        <section id="statusPanel" class="status-panel">
+          <div class="empty-state">
+            <h2>Waiting for data</h2>
+            <p>Use a CSV with headers in the first row. Dates, numbers, identifiers, categorical text, free text, booleans, and URLs are detected automatically.</p>
+          </div>
+        </section>
+
+        <section id="overview">
+          <div id="summaryGrid" class="summary-grid" aria-live="polite"></div>
+        </section>
+
+        <section id="schema">
+          <div id="schemaGrid" class="schema-grid"></div>
+        </section>
+
+        <section id="charts" class="charts-section">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Recommended Views</p>
+              <h2>Charts</h2>
+            </div>
+            <div class="chart-tabs" id="chartTabs" aria-label="Chart filters"></div>
+          </div>
+          <div id="dashboardGrid" class="dashboard-grid"></div>
+          <button id="loadMoreButton" class="load-more-button" type="button" hidden>Show more charts</button>
+        </section>
+      </main>
+    </div>
 
     <template id="cardTemplate">
       <article class="chart-card">
@@ -59,6 +124,6 @@
       </article>
     </template>
 
-    <script src="app.js?v=3"></script>
+    <script src="app.js?v=5"></script>
   </body>
 </html>

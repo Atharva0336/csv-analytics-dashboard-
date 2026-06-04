@@ -1,11 +1,21 @@
 const input = document.querySelector("#csvInput");
 const sampleButton = document.querySelector("#sampleButton");
+const exportButton = document.querySelector("#exportButton");
+const loadMoreButton = document.querySelector("#loadMoreButton");
+const chartTabs = document.querySelector("#chartTabs");
+const brandNameInput = document.querySelector("#brandNameInput");
+const linkedinInput = document.querySelector("#linkedinInput");
+const githubInput = document.querySelector("#githubInput");
+const brandLinks = document.querySelector("#brandLinks");
 const dropZone = document.querySelector("#dropZone");
 const statusPanel = document.querySelector("#statusPanel");
 const summaryGrid = document.querySelector("#summaryGrid");
 const schemaGrid = document.querySelector("#schemaGrid");
 const dashboardGrid = document.querySelector("#dashboardGrid");
 const template = document.querySelector("#cardTemplate");
+let currentProfile = null;
+let activeChartFilter = "All";
+let visibleChartLimit = 10;
 
 const COLORS = [
   "#0f766e",
@@ -40,6 +50,21 @@ input.addEventListener("change", (event) => {
 sampleButton.addEventListener("click", () => {
   window.CsvInsight.analyzeText(SAMPLE_CSV, "sample-sales.csv");
 });
+
+exportButton.addEventListener("click", () => {
+  if (currentProfile) downloadReport(currentProfile);
+});
+
+loadMoreButton.addEventListener("click", () => {
+  visibleChartLimit += 10;
+  renderDashboard(currentProfile.chartPlans);
+});
+
+[brandNameInput, linkedinInput, githubInput].forEach((inputEl) => {
+  inputEl.addEventListener("input", renderBranding);
+});
+
+renderBranding();
 
 ["dragenter", "dragover"].forEach((name) => {
   dropZone.addEventListener(name, (event) => {
@@ -641,10 +666,15 @@ function scorePlan(plan, ctx) {
 }
 
 function renderAll(profile) {
+  currentProfile = profile;
+  activeChartFilter = "All";
+  visibleChartLimit = 10;
+  exportButton.disabled = false;
   clearCharts();
   renderStatus(profile);
   renderSummary(profile);
   renderSchema(profile);
+  renderChartTabs(profile.chartPlans);
   renderDashboard(profile.chartPlans);
 }
 
@@ -687,9 +717,34 @@ function renderSchema(profile) {
     .join("");
 }
 
+function renderChartTabs(plans) {
+  const tabs = ["All", ...new Set(plans.map(chartGroup))];
+  chartTabs.innerHTML = tabs
+    .map((tab) => `<button class="tab-button${tab === activeChartFilter ? " active" : ""}" type="button" data-filter="${escapeHtml(tab)}">${escapeHtml(tab)}</button>`)
+    .join("");
+  chartTabs.querySelectorAll("button").forEach((button) => {
+    button.addEventListener("click", () => {
+      activeChartFilter = button.dataset.filter;
+      visibleChartLimit = 10;
+      renderChartTabs(currentProfile.chartPlans);
+      renderDashboard(currentProfile.chartPlans);
+    });
+  });
+}
+
+function chartGroup(plan) {
+  if (/time/i.test(plan.kind)) return "Time";
+  if (/category|Pareto|Share/i.test(plan.kind)) return "Category";
+  if (/Scatter|Correlation|Histogram|summary|Metric/i.test(plan.kind)) return "Numeric";
+  if (/quality|Completeness|Schema|Cardinality|preview/i.test(plan.kind)) return "Quality";
+  return "Other";
+}
+
 function renderDashboard(plans) {
   dashboardGrid.innerHTML = "";
-  plans.forEach((plan) => {
+  const filtered = activeChartFilter === "All" ? plans : plans.filter((plan) => chartGroup(plan) === activeChartFilter);
+  const visiblePlans = filtered.slice(0, visibleChartLimit);
+  visiblePlans.forEach((plan) => {
     const node = template.content.firstElementChild.cloneNode(true);
     node.classList.toggle("wide", plan.size === "wide");
     node.classList.toggle("full", plan.size === "full");
@@ -707,6 +762,8 @@ function renderDashboard(plans) {
       drawChart(canvas, plan);
     }
   });
+  loadMoreButton.hidden = filtered.length <= visibleChartLimit;
+  loadMoreButton.textContent = `Show more charts (${Math.max(0, filtered.length - visibleChartLimit)} left)`;
 }
 
 function renderTable(container, plan) {
@@ -982,6 +1039,93 @@ function truncate(value, length) {
 
 function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" })[char]);
+}
+
+function renderBranding() {
+  const name = brandNameInput.value.trim() || "Atharva Raut";
+  document.querySelector(".brand-block strong").textContent = "Atharva Analytics";
+  document.querySelector(".brand-block span").textContent = `by ${name}`;
+
+  const links = [
+    ["LinkedIn", linkedinInput.value.trim()],
+    ["GitHub / Portfolio", githubInput.value.trim()],
+  ].filter(([, url]) => /^https?:\/\/\S+$/i.test(url));
+
+  brandLinks.innerHTML = links.length
+    ? links.map(([label, url]) => `<a href="${escapeHtml(url)}" target="_blank" rel="noreferrer">${escapeHtml(label)}</a>`).join("")
+    : `<span>Paste your links to show them here.</span>`;
+}
+
+function downloadReport(profile) {
+  const brandName = brandNameInput.value.trim() || "Atharva Raut";
+  const topCharts = profile.chartPlans.slice(0, 12);
+  const schemaRows = profile.columns
+    .map(
+      (col) => `
+        <tr>
+          <td>${escapeHtml(col.name)}</td>
+          <td>${escapeHtml(TYPE_LABELS[col.type] ?? col.type)}</td>
+          <td>${Math.round(col.completeness * 100)}%</td>
+          <td>${formatNumber(col.uniqueCount)}</td>
+        </tr>
+      `,
+    )
+    .join("");
+  const chartRows = topCharts
+    .map(
+      (plan) => `
+        <tr>
+          <td>${escapeHtml(plan.title)}</td>
+          <td>${escapeHtml(plan.kind)}</td>
+          <td>${escapeHtml(chartGroup(plan))}</td>
+          <td>${formatNumber(plan.score)}</td>
+          <td>${escapeHtml(plan.formula)}</td>
+        </tr>
+      `,
+    )
+    .join("");
+  const report = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>${escapeHtml(profile.fileName)} Report</title>
+  <style>
+    body { margin: 40px; color: #15202b; font-family: Arial, sans-serif; }
+    h1 { margin-bottom: 4px; }
+    p { color: #64748b; }
+    table { width: 100%; margin-top: 22px; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 10px; border-bottom: 1px solid #d7e1e8; text-align: left; vertical-align: top; }
+    th { color: #0e7490; }
+    .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 24px 0; }
+    .tile { padding: 16px; border: 1px solid #d7e1e8; border-radius: 8px; }
+    .tile strong { display: block; font-size: 28px; }
+  </style>
+</head>
+<body>
+  <h1>${escapeHtml(profile.fileName)} dashboard report</h1>
+  <p>Generated by Atharva Analytics, by ${escapeHtml(brandName)}.</p>
+  <div class="tiles">
+    <div class="tile"><strong>${formatNumber(profile.rows.length)}</strong>Rows</div>
+    <div class="tile"><strong>${formatNumber(profile.columns.length)}</strong>Columns</div>
+    <div class="tile"><strong>${formatNumber(profile.numeric.length)}</strong>Numeric columns</div>
+    <div class="tile"><strong>${formatNumber(profile.chartPlans.length)}</strong>Recommended charts</div>
+  </div>
+  <h2>Detected schema</h2>
+  <table><thead><tr><th>Column</th><th>Type</th><th>Completeness</th><th>Unique values</th></tr></thead><tbody>${schemaRows}</tbody></table>
+  <h2>Top recommended charts</h2>
+  <table><thead><tr><th>Title</th><th>Type</th><th>Group</th><th>Score</th><th>Formula</th></tr></thead><tbody>${chartRows}</tbody></table>
+</body>
+</html>`;
+
+  const blob = new Blob([report], { type: "text/html" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `${profile.fileName.replace(/\.[^.]+$/, "") || "csv-dashboard"}-report.html`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
 }
 
 window.CsvInsight = {
